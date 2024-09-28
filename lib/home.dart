@@ -1,5 +1,7 @@
 import 'package:ExpenseTracker/yearly_report.dart';
 import 'package:flutter/material.dart';
+import 'BudgetsPage.dart';
+import 'MyBudget.dart';
 import 'sidebar.dart';
 import 'calendar_page.dart';
 import 'add_income2.dart';
@@ -144,6 +146,34 @@ class _HomeState extends State<Home> {
                 ),
               ),
 
+
+              SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => MyBudget()),
+                  ).then((value) {
+                    // Refresh the data if needed when returning from the Budget page
+                    fetchDataFromDatabase();
+                  });
+                },
+                child: SizedBox(
+                  height: 50,
+                  child: Center(child: Text('My Budget')),
+                ),
+              ),
+              SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () {
+                  // Navigate to BudgetsPage
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => BudgetsPage()),
+                  );
+                },
+                child: Text('View Budgets'),
+              ),
               SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () {

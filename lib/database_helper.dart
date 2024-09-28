@@ -30,6 +30,7 @@ class DatabaseHelper {
             note TEXT
           )
         ''');
+
         await db.execute('''
           CREATE TABLE categories(
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -37,16 +38,25 @@ class DatabaseHelper {
           )
         ''');
 
-        db.execute('''
-        CREATE TABLE liabilities(
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          amount REAL,
-          obligations TEXT,
-          repaymentDate TEXT,
-          interestPercentage REAL
-        )
+        await db.execute('''
+          CREATE TABLE liabilities(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            amount REAL,
+            obligations TEXT,
+            repaymentDate TEXT,
+            interestPercentage REAL
+          )
         ''');
 
+        // Add the missing budgets table
+        await db.execute('''
+          CREATE TABLE budgets(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            category TEXT,
+            budgetAmount REAL,
+            month TEXT
+          )
+        ''');
 
         // Insert default categories
         await _insertDefaultCategories(db);
@@ -58,7 +68,15 @@ class DatabaseHelper {
   }
 
   Future<void> _insertDefaultCategories(Database db) async {
-    List<String> defaultCategories = ['Business', 'Salary', 'Food', 'Transport', 'Shopping', 'Home', 'Liability Payment'];
+    List<String> defaultCategories = [
+      'Business',
+      'Salary',
+      'Food',
+      'Transport',
+      'Shopping',
+      'Home',
+      'Liability Payment'
+    ];
 
     for (String category in defaultCategories) {
       await db.insert('categories', {'category': category});
@@ -67,7 +85,8 @@ class DatabaseHelper {
 
   Future<int> insertTransaction(Map<String, dynamic> transactionData) async {
     final db = await database;
-    String formattedDate = DateFormat('yyyy-MM-dd').format(transactionData['date']);
+    String formattedDate =
+    DateFormat('yyyy-MM-dd').format(transactionData['date']);
     transactionData['date'] = formattedDate;
     return await db.insert('transactions', transactionData);
   }
@@ -147,7 +166,8 @@ class DatabaseHelper {
     return result;
   }
 
-  Future<int> insertLiability(double amount, String obligations,  repaymentDate, double interestPercentage) async {
+  Future<int> insertLiability(double amount, String obligations,
+      repaymentDate, double interestPercentage) async {
     final db = await database;
     return await db.insert(
       'liabilities',
@@ -166,18 +186,10 @@ class DatabaseHelper {
     return await db.query('liabilities');
   }
 
-
-
-  // Function to delete a liability by ID
-  /* Future<void> deleteLiability(int id) async {
-    final db = await database;
-    await db.delete('liabilities', where: 'id = ?', whereArgs: [id]);
-  }
-*/
-
   Future<double> deleteLiability(int id) async {
     final db = await database;
-    var liability = await db.query('liabilities', where: 'id = ?', whereArgs: [id]);
+    var liability =
+    await db.query('liabilities', where: 'id = ?', whereArgs: [id]);
 
     if (liability.isNotEmpty) {
       double amount = liability[0]['amount'] as double;
@@ -203,6 +215,42 @@ class DatabaseHelper {
     return 0;
   }
 
+  // Budget table methods
 
+  Future<int> insertBudget(
+      String category, double budgetAmount, String month) async {
+    final db = await database;
+    final budgetData = {
+      'category': category,
+      'budgetAmount': budgetAmount,
+      'month': month
+    };
+    return await db.insert('budgets', budgetData);
+  }
 
+  Future<List<Map<String, dynamic>>> getBudgets() async {
+    final db = await database;
+    return await db.query('budgets');
+  }
+
+  Future<void> deleteBudget(int id) async {
+    final db = await database;
+    await db.delete('budgets', where: 'id = ?', whereArgs: [id]);
+  }
+
+  Future<void> updateBudget(int id, String category, double budgetAmount,
+      String month) async {
+    final db = await database;
+    final updatedData = {
+      'category': category,
+      'budgetAmount': budgetAmount,
+      'month': month
+    };
+    await db.update(
+      'budgets',
+      updatedData,
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
 }
