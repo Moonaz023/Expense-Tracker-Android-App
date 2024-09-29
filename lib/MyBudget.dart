@@ -14,6 +14,10 @@ class _MyBudgetState extends State<MyBudget> {
   List<String> categories = [];
   DatabaseHelper databaseHelper = DatabaseHelper();
 
+  // Controllers to manage text fields
+  TextEditingController monthController = TextEditingController();
+  TextEditingController amountController = TextEditingController();  // Added controller for amount
+
   @override
   void initState() {
     super.initState();
@@ -29,8 +33,21 @@ class _MyBudgetState extends State<MyBudget> {
 
   Future<void> saveBudget() async {
     if (selectedCategory != null && budgetAmount != null && selectedMonth != null) {
-      await databaseHelper.insertBudget(selectedCategory!, budgetAmount!, selectedMonth!);
+      // Use the new insertOrUpdateBudget method
+      await databaseHelper.insertOrUpdateBudget(selectedCategory!, budgetAmount!, selectedMonth!);
+
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Budget set successfully!")));
+
+      // Clear the form after saving the budget
+      setState(() {
+        selectedCategory = null;
+        budgetAmount = null;
+        selectedMonth = null;
+        monthController.clear();   // Clear the month field
+        amountController.clear();  // Clear the amount field
+      });
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Please fill all fields.")));
     }
   }
 
@@ -55,6 +72,7 @@ class _MyBudgetState extends State<MyBudget> {
             ),
             SizedBox(height: 10),
             TextFormField(
+              controller: amountController,  // Link the controller to the amount field
               keyboardType: TextInputType.number,
               decoration: InputDecoration(labelText: 'Enter Budget Amount'),
               onChanged: (value) => setState(() => budgetAmount = double.tryParse(value)),
@@ -73,10 +91,11 @@ class _MyBudgetState extends State<MyBudget> {
                 if (pickedDate != null) {
                   setState(() {
                     selectedMonth = DateFormat('yyyy-MM').format(pickedDate);
+                    monthController.text = selectedMonth!; // Update the text in the controller
                   });
                 }
               },
-              controller: TextEditingController(text: selectedMonth),
+              controller: monthController, // Use the controller to manage the text field
             ),
             SizedBox(height: 20),
             ElevatedButton(

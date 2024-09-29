@@ -1,4 +1,3 @@
-import 'package:ExpenseTracker/yearly_report.dart';
 import 'package:flutter/material.dart';
 import 'BudgetsPage.dart';
 import 'MyBudget.dart';
@@ -9,6 +8,7 @@ import 'all_transactions.dart';
 import 'dashboard.dart';
 import 'liabilities_entry_page.dart';
 import 'database_helper.dart';
+import 'yearly_report.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -60,7 +60,6 @@ class _HomeState extends State<Home> {
     });
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -90,7 +89,6 @@ class _HomeState extends State<Home> {
           },
         ),
       ),
-
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -98,98 +96,117 @@ class _HomeState extends State<Home> {
             children: <Widget>[
               Dashboard(income: income, expense: expense, balance: balance),
               SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => AddIncomePage()),
-                  ).then((value) {
-                    // When you return from AddIncomePage, refresh the data
-                    fetchDataFromDatabase();
-                  });
-                },
-                child: SizedBox(
-                  height: 50,
-                  child: Center(child: Text('Add Transaction')),
-                ),
-              ),
-              SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => LiabilitiesEntryPage()),
-                  ).then((value) {
-                    // When you return from AllTransactions, refresh the data
-                    fetchDataFromDatabase();
-                  });
-                },
-                child: SizedBox(
-                  height: 50,
-                  child: Center(child: Text('Add Liabilities')),
-                ),
-              ),
-              SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => AllTransactions()),
-                  ).then((value) {
-                    // When you return from AllTransactions, refresh the data
-                    fetchDataFromDatabase();
-                  });
-                },
-                child: SizedBox(
-                  height: 50,
-                  child: Center(child: Text('All Transaction')),
-                ),
+
+              // First Row of Buttons
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly, // Space the buttons evenly
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => AddIncomePage()),
+                      ).then((value) {
+                        fetchDataFromDatabase(); // Refresh data
+                      });
+                    },
+                    child: SizedBox(
+                      height: 45,
+                      width: 120, // Equal width for both buttons
+                      child: Center(child: Text('Add Transaction')),
+                    ),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => LiabilitiesEntryPage()),
+                      ).then((value) {
+                        fetchDataFromDatabase(); // Refresh data
+                      });
+                    },
+                    child: SizedBox(
+                      height: 45,
+                      width: 120, // Equal width for both buttons
+                      child: Center(child: Text('Add Liabilities')),
+                    ),
+                  ),
+                ],
               ),
 
+              SizedBox(height: 16), // Spacing between rows
 
-              SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => MyBudget()),
-                  ).then((value) {
-                    // Refresh the data if needed when returning from the Budget page
-                    fetchDataFromDatabase();
-                  });
-                },
-                child: SizedBox(
-                  height: 50,
-                  child: Center(child: Text('My Budget')),
-                ),
-              ),
-              SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {
-                  // Navigate to BudgetsPage
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => BudgetsPage()),
-                  );
-                },
-                child: Text('View Budgets'),
-              ),
-              SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => YearlyReportPage()),
-                  );
-                },
-                child: SizedBox(
-                  height: 50,
-                  child: Center(child: Text('Yearly Report')),
-                ),
+              // Second Row of Buttons
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => AllTransactions()),
+                      ).then((value) {
+                        fetchDataFromDatabase(); // Refresh data
+                      });
+                    },
+                    child: SizedBox(
+                      height: 45,
+                      width: 120,
+                      child: Center(child: Text('All Transactions')),
+                    ),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => MyBudget()),
+                      ).then((value) {
+                        fetchDataFromDatabase(); // Refresh data
+                      });
+                    },
+                    child: SizedBox(
+                      height: 45,
+                      width: 120,
+                      child: Center(child: Text('My Budget')),
+                    ),
+                  ),
+                ],
               ),
 
+              SizedBox(height: 16), // Spacing between rows
 
-
+              // Third Row of Buttons
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => BudgetsPage()),
+                      );
+                    },
+                    child: SizedBox(
+                      height: 45,
+                      width: 120,
+                      child: Center(child: Text('View Budgets')),
+                    ),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => YearlyReportPage()),
+                      );
+                    },
+                    child: SizedBox(
+                      height: 45,
+                      width: 120,
+                      child: Center(child: Text('Yearly Report')),
+                    ),
+                  ),
+                ],
+              ),
             ],
           ),
         ),

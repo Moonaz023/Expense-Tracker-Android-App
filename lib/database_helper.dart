@@ -217,16 +217,52 @@ class DatabaseHelper {
 
   // Budget table methods
 
-  Future<int> insertBudget(
-      String category, double budgetAmount, String month) async {
+  // Future<int> insertBudget(
+  //     String category, double budgetAmount, String month) async {
+  //   final db = await database;
+  //   final budgetData = {
+  //     'category': category,
+  //     'budgetAmount': budgetAmount,
+  //     'month': month
+  //   };
+  //   return await db.insert('budgets', budgetData);
+  // }
+
+  // new insert budget
+  Future<int> insertBudget(String category, double budgetAmount, String month) async {
     final db = await database;
-    final budgetData = {
-      'category': category,
-      'budgetAmount': budgetAmount,
-      'month': month
-    };
-    return await db.insert('budgets', budgetData);
+
+    // Check if a budget for the same category and month already exists
+    List<Map<String, dynamic>> existingBudgets = await db.query(
+      'budgets',
+      where: 'category = ? AND month = ?',
+      whereArgs: [category, month],
+    );
+
+    if (existingBudgets.isNotEmpty) {
+      // Update the existing budget
+      double existingAmount = existingBudgets[0]['budgetAmount'];
+      double newAmount = existingAmount + budgetAmount; // Add the new budget to the existing amount
+
+      await db.update(
+        'budgets',
+        {'budgetAmount': newAmount},
+        where: 'id = ?',
+        whereArgs: [existingBudgets[0]['id']],
+      );
+
+      return existingBudgets[0]['id']; // Return the ID of the updated budget
+    } else {
+      // Insert new budget
+      final budgetData = {
+        'category': category,
+        'budgetAmount': budgetAmount,
+        'month': month
+      };
+      return await db.insert('budgets', budgetData);
+    }
   }
+
 
   Future<List<Map<String, dynamic>>> getBudgets() async {
     final db = await database;
