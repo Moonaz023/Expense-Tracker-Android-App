@@ -87,9 +87,13 @@ class _BudgetsPageState extends State<BudgetsPage> {
 
                     // Calculate progress percentage (capped at 1.0)
                     double progress = (spentAmount / budgetAmount).clamp(0.0, 1.0);
+                    double percentageSpent = (spentAmount / budgetAmount) * 100; // Calculate the percentage spent
 
-                    // Check if spent >= 70% of the budget and show warning
-                    bool isWarning = progress >= 0.7;
+                    // Check if spent is between 70% and 100% of the budget
+                    bool isWarning = percentageSpent >= 70 && percentageSpent < 100;
+
+                    // Check if the budget is exceeded (spent more than 100%)
+                    bool isExceeded = percentageSpent >= 100;
 
                     return Card(
                       margin: EdgeInsets.symmetric(vertical: 8),
@@ -119,18 +123,31 @@ class _BudgetsPageState extends State<BudgetsPage> {
                               value: progress, // Shows how much of the budget is spent
                               backgroundColor: Colors.grey[300],
                               valueColor: AlwaysStoppedAnimation<Color>(
-                                progress >= 1.0 ? Colors.red : (isWarning ? Colors.orange : Colors.green),
+                                isExceeded
+                                    ? Colors.red
+                                    : (isWarning ? Colors.orange : Colors.green),
                               ),
                             ),
                             SizedBox(height: 8),
 
-                            // Warning Text if spent >= 70%
+                            // Warning Text if spent is between 70% and 100%
                             if (isWarning)
                               Text(
-                                'Warning: You have spent more than 70% of your budget!',
+                                'Warning: You have spent ${percentageSpent.toStringAsFixed(1)}% of your budget!',
                                 style: TextStyle(
                                   fontSize: 14,
                                   color: Colors.orange,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+
+                            // Alert message if budget is exceeded
+                            if (isExceeded)
+                              Text(
+                                'Alert: You have already exceeded your budget!',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.red,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
